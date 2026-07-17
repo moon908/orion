@@ -1,0 +1,53 @@
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model CelestialBody {
+  id               String   @id
+  name             String
+  type             String   // star, planet, dwarf, satellite
+  color            String   // hex color code
+  diameter         Float
+  mass             String
+  distanceFromSun  Float
+  gravity          Float
+  temperature      String
+  orbitalPeriod    Float
+  rotationPeriod   Float
+  moonsCount       Int      @default(0)
+  composition      String[] // list of chemical compounds/elements
+  interestingFacts String[]
+  atmosphereDesc   String   @default("")
+  createdAt        DateTime @default(now())
+}
+
+model HorizonsCache {
+  id        String   @id @default(uuid())
+  dateKey   String   // YYYY-MM-DD format
+  bodyId    String
+  x         Float
+  y         Float
+  z         Float
+  vx        Float
+  vy        Float
+  vz        Float
+  createdAt DateTime @default(now())
+
+  @@unique([dateKey, bodyId])
+  @@index([dateKey])
+}
+
+model SavedScene {
+  id             String   @id @default(uuid())
+  name           String
+  simDate        DateTime
+  selectedBodyId String?
+  scaleMode      String   // visual, realistic
+  cameraMode     String   // free, follow
+  createdAt      DateTime @default(now())
+}
