@@ -9,6 +9,16 @@ import { Sun } from './Sun';
 import { Planet } from './Planet';
 import { AsteroidBelt } from './AsteroidBelt';
 import { getPlanetPosition } from '../utils/physics';
+import { Jwst } from './Jwst';
+
+const EARTH_ELEMENTS = {
+  semiMajorAxis: 11.5,
+  eccentricity: 0.0167,
+  inclination: 0.0,
+  orbitalPeriod: 365.25,
+  rotationPeriod: 24,
+  obliquity: 23.44
+};
 
 // Twinkling stars GPU shader component
 function TwinklingStars() {
@@ -116,6 +126,20 @@ function CameraController() {
   // Listen to select change and trigger smooth camera fly-to animation
   useEffect(() => {
     if (selectedBodyId) {
+      if (selectedBodyId === 'jwst') {
+        const [ex, ey, ez] = getPlanetPosition(EARTH_ELEMENTS, simDate, scaleMode);
+        const earthPos = new THREE.Vector3(ex, ey, ez);
+        const directionToEarth = earthPos.clone().normalize();
+        const offsetDistance = scaleMode === 'realistic' ? 0.9 : 1.4;
+        const jwstPos = earthPos.clone().add(directionToEarth.multiplyScalar(offsetDistance));
+
+        lerpTargetPos.current.copy(jwstPos);
+        // Place camera very close since JWST is small
+        lerpCameraPos.current.copy(jwstPos).add(new THREE.Vector3(0.5, 0.4, 0.8));
+        transitionActive.current = true;
+        return;
+      }
+
       const body = CELESTIAL_BODIES.find((b) => b.id === selectedBodyId);
       if (body) {
         const [px, py, pz] = getPlanetPosition(body.orbitalElements, simDate, scaleMode);
@@ -158,8 +182,20 @@ function CameraController() {
         transitionActive.current = false;
       }
     } 
-    // 2. If in follow mode (and not in transitional flight), lock orbit control target onto moving planet
+    // 2. If in follow mode (and not in transitional flight), lock orbit control target onto moving planet/satellite
     else if (selectedBodyId && cameraMode === 'follow') {
+      if (selectedBodyId === 'jwst') {
+        const [ex, ey, ez] = getPlanetPosition(EARTH_ELEMENTS, simDate, scaleMode);
+        const earthPos = new THREE.Vector3(ex, ey, ez);
+        const directionToEarth = earthPos.clone().normalize();
+        const offsetDistance = scaleMode === 'realistic' ? 0.9 : 1.4;
+        const jwstPos = earthPos.clone().add(directionToEarth.multiplyScalar(offsetDistance));
+        if (controlsRef.current) {
+          controlsRef.current.target.copy(jwstPos);
+        }
+        return;
+      }
+
       const body = CELESTIAL_BODIES.find((b) => b.id === selectedBodyId);
       if (body) {
         const [px, py, pz] = getPlanetPosition(body.orbitalElements, simDate, scaleMode);
@@ -231,6 +267,9 @@ export function SolarSystemCanvas() {
 
         {/* Asteroid Belt & Kuiper Belt */}
         <AsteroidBelt />
+
+        {/* James Webb Space Telescope (JWST) at L2 */}
+        <Jwst />
 
         {/* Camera Control System */}
         <CameraController />

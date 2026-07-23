@@ -6,6 +6,8 @@ import { Sidebar } from './Sidebar';
 import { InfoPanel } from './InfoPanel';
 import { TimeControls } from './TimeControls';
 import { useSolarStore } from '../store/useSolarStore';
+import { AsteroidTracker } from './AsteroidTracker';
+import { JwstTracker } from './JwstTracker';
 
 interface DashboardLayoutProps {
   children: React.ReactNode;
@@ -14,6 +16,8 @@ interface DashboardLayoutProps {
 export function DashboardLayout({ children }: DashboardLayoutProps) {
   const selectedBodyId = useSolarStore((state) => state.selectedBodyId);
   const horizonsLoading = useSolarStore((state) => state.horizonsLoading);
+  const showAsteroidTracker = useSolarStore((state) => state.showAsteroidTracker);
+  const showJwstDashboard = useSolarStore((state) => state.showJwstDashboard);
   
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [mobileInfoOpen, setMobileInfoOpen] = useState(false);
@@ -95,10 +99,10 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
           {/* Right Information Panel Overlay (Desktop and Mobile) */}
           <div
             className={`absolute sm:relative sm:flex right-0 z-20 h-full transition-transform duration-300 pointer-events-auto ${
-              mobileInfoOpen || (selectedBodyId && !mobileMenuOpen) ? 'translate-x-0' : 'translate-x-80 sm:translate-x-0'
+              mobileInfoOpen || (selectedBodyId && (selectedBodyId !== 'jwst' || !showJwstDashboard) && !mobileMenuOpen) ? 'translate-x-0' : 'translate-x-80 sm:translate-x-0'
             }`}
           >
-            <InfoPanel />
+            {(selectedBodyId && (selectedBodyId !== 'jwst' || !showJwstDashboard)) && <InfoPanel />}
           </div>
         </div>
 
@@ -107,6 +111,16 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
           <TimeControls />
         </div>
       </div>
+
+      {/* 4. Fullscreen Near-Earth Asteroid Tracking Overlay */}
+      <AnimatePresence>
+        {showAsteroidTracker && <AsteroidTracker />}
+      </AnimatePresence>
+
+      {/* 5. Fullscreen James Webb Space Telescope Telemetry Dashboard */}
+      <AnimatePresence>
+        {(selectedBodyId === 'jwst' && showJwstDashboard) && <JwstTracker />}
+      </AnimatePresence>
     </div>
   );
 }

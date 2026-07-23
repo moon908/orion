@@ -60,10 +60,11 @@ export function useHorizons() {
    */
   const fetchNearEarthAsteroids = async (date: Date) => {
     const dateStr = date.toISOString().split('T')[0];
-    const url = `https://api.nasa.gov/neo/rest/v1/feed?start_date=${dateStr}&end_date=${dateStr}&api_key=${nasaApiKey}`;
+    const url = `/api/neows?date=${dateStr}`;
     
     try {
       const res = await fetch(url);
+      if (!res.ok) throw new Error(`Proxy error status: ${res.status}`);
       const data = await res.json();
       return data;
     } catch (err) {

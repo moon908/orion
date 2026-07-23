@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Search, RefreshCw, Eye, EyeOff, Scale, Compass } from 'lucide-react';
+import { Search, RefreshCw, Eye, EyeOff, Scale, Compass, Target } from 'lucide-react';
 import { useSolarStore } from '../store/useSolarStore';
 import { CELESTIAL_BODIES } from '../constants/celestialData';
 
@@ -18,11 +18,13 @@ export function Toolbar() {
   const showAsteroids = useSolarStore((state) => state.showAsteroids);
   const setShowAsteroids = useSolarStore((state) => state.setShowAsteroids);
 
+  const showAsteroidTracker = useSolarStore((state) => state.showAsteroidTracker);
+  const setShowAsteroidTracker = useSolarStore((state) => state.setShowAsteroidTracker);
+
   const resetSim = useSolarStore((state) => state.resetSim);
 
   const [suggestions, setSuggestions] = useState<string[]>([]);
   const [showDropdown, setShowDropdown] = useState(false);
-
   const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const val = e.target.value;
     setSearchQuery(val);
@@ -31,6 +33,11 @@ export function Toolbar() {
       const filtered = CELESTIAL_BODIES.filter((body) =>
         body.name.toLowerCase().includes(val.toLowerCase())
       ).map((body) => body.name);
+
+      if ('james webb space telescope jwst'.includes(val.toLowerCase())) {
+        filtered.push('JWST');
+      }
+
       setSuggestions(filtered);
       setShowDropdown(true);
     } else {
@@ -40,6 +47,13 @@ export function Toolbar() {
   };
 
   const handleSuggestionClick = (name: string) => {
+    if (name === 'JWST') {
+      setSelectedBodyId('jwst');
+      setCameraMode('follow');
+      setSearchQuery('');
+      setShowDropdown(false);
+      return;
+    }
     const body = CELESTIAL_BODIES.find((b) => b.name === name);
     if (body) {
       setSelectedBodyId(body.id);
@@ -51,6 +65,13 @@ export function Toolbar() {
   const handleSearchSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (searchQuery.trim().length > 0) {
+      if ('james webb space telescope jwst'.includes(searchQuery.toLowerCase())) {
+        setSelectedBodyId('jwst');
+        setCameraMode('follow');
+        setSearchQuery('');
+        setShowDropdown(false);
+        return;
+      }
       const match = CELESTIAL_BODIES.find((b) =>
         b.name.toLowerCase().includes(searchQuery.toLowerCase())
       );
@@ -61,7 +82,6 @@ export function Toolbar() {
       }
     }
   };
-
   return (
     <div className="flex flex-col sm:flex-row items-center justify-between gap-4 w-full px-6 py-4 rounded-2xl bg-white/[0.07] backdrop-blur-2xl border border-white/20 shadow-[0_8px_32px_0_rgba(0,0,0,0.37)] text-white pointer-events-auto">
       {/* App Branding */}
@@ -149,6 +169,20 @@ export function Toolbar() {
         >
           {showAsteroids ? <Eye className="w-3.5 h-3.5" /> : <EyeOff className="w-3.5 h-3.5" />}
           <span>Belts</span>
+        </button>
+
+        {/* Toggle Asteroid Tracker */}
+        <button
+          onClick={() => setShowAsteroidTracker(!showAsteroidTracker)}
+          className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold tracking-wide border transition-all ${
+            showAsteroidTracker
+              ? 'bg-[#007AFF] text-white border-white/10 shadow-md shadow-[#007AFF]/25'
+              : 'bg-white/5 text-white border border-white/20 hover:bg-white/15 hover:text-white'
+          }`}
+          title="Open Live Near-Earth Asteroid Tracker (NeoWs)"
+        >
+          <Target className="w-3.5 h-3.5" />
+          <span>Asteroid Tracker</span>
         </button>
 
         {/* Separator */}

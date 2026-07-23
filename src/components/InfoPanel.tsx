@@ -7,6 +7,7 @@ import { CELESTIAL_BODIES } from '../constants/celestialData';
 export function InfoPanel() {
   const selectedBodyId = useSolarStore((state) => state.selectedBodyId);
   const setSelectedBodyId = useSolarStore((state) => state.setSelectedBodyId);
+  const setShowJwstDashboard = useSolarStore((state) => state.setShowJwstDashboard);
 
   // Horizons Live State
   const planetVectors = useSolarStore((state) => state.planetVectors);
@@ -14,7 +15,46 @@ export function InfoPanel() {
   const horizonsLoading = useSolarStore((state) => state.horizonsLoading);
   const horizonsError = useSolarStore((state) => state.horizonsError);
 
-  const selectedBody = CELESTIAL_BODIES.find((b) => b.id === selectedBodyId);
+  const jwstData = {
+    id: 'jwst',
+    name: 'James Webb (JWST)',
+    type: 'satellite',
+    radius: 0.003,
+    mass: '6,500 kg',
+    gravity: 0,
+    diameter: 0.02,
+    distanceFromSun: 151.1,
+    orbitalPeriod: 365.25,
+    rotationPeriod: 0,
+    moonsCount: 0,
+    temperature: '-233°C to 85°C',
+    atmosphere: {
+      composition: ['Protected by 5 Kapton layers'],
+      pressure: 'High vacuum of space',
+      description: 'JWST operates in extreme cold (below 50 K / -223°C) at L2 to allow high-precision infrared astronomical measurements.'
+    },
+    interestingFacts: [
+      'Located at the Sun-Earth L2 Lagrange point, 1.5 million km directly behind Earth.',
+      'Gold-coated primary mirror array is 6.5 meters wide to capture faint infrared galaxies.',
+      'Protected by a tennis-court-sized sunshield that creates a 300°C temperature drop.'
+    ],
+    color: '#D4AF37'
+  };
+
+  const selectedBody = selectedBodyId === 'jwst'
+    ? jwstData
+    : CELESTIAL_BODIES.find((b) => b.id === selectedBodyId);
+
+  const scrollContainerRef = React.useRef<HTMLDivElement | null>(null);
+
+  React.useEffect(() => {
+    if (scrollContainerRef.current) {
+      scrollContainerRef.current.scrollTo({
+        top: 0,
+        behavior: 'smooth',
+      });
+    }
+  }, [selectedBodyId]);
 
   return (
     <AnimatePresence>
@@ -46,7 +86,10 @@ export function InfoPanel() {
           </div>
 
           {/* Details Scroll Content */}
-          <div className="flex-1 p-5 overflow-y-auto space-y-5 custom-scrollbar text-xs">
+          <div
+            ref={scrollContainerRef}
+            className="flex-1 p-5 overflow-y-auto space-y-5 custom-scrollbar text-xs"
+          >
             {/* Quick Stats Grid */}
             <div className="grid grid-cols-2 gap-3">
               {/* Diameter */}
@@ -152,6 +195,17 @@ export function InfoPanel() {
                 ))}
               </ul>
             </div>
+
+            {/* Launch full telemetry dashboard button for JWST */}
+            {selectedBodyId === 'jwst' && (
+              <button
+                onClick={() => setShowJwstDashboard(true)}
+                className="w-full mt-4 py-3 rounded-xl bg-[#007AFF] hover:bg-[#007AFF]/90 text-white font-bold text-xs flex items-center justify-center gap-2 shadow-[0_4px_12px_rgba(0,122,255,0.3)] transition-all cursor-pointer border border-[#007AFF]"
+              >
+                <Compass className="w-4 h-4" />
+                <span>OPEN FULL TELEMETRY SYSTEM</span>
+              </button>
+            )}
           </div>
         </motion.div>
       )}

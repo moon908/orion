@@ -9,6 +9,17 @@ export function Sidebar() {
   const hoveredBodyId = useSolarStore((state) => state.hoveredBodyId);
   const setHoveredBodyId = useSolarStore((state) => state.setHoveredBodyId);
 
+  const activeItemRef = React.useRef<HTMLButtonElement | null>(null);
+
+  React.useEffect(() => {
+    if (activeItemRef.current) {
+      activeItemRef.current.scrollIntoView({
+        behavior: 'smooth',
+        block: 'nearest',
+      });
+    }
+  }, [selectedBodyId]);
+
   return (
     <motion.div
       initial={{ x: -100, opacity: 0 }}
@@ -29,6 +40,7 @@ export function Sidebar() {
           return (
             <button
               key={body.id}
+              ref={isSelected ? activeItemRef : null}
               onClick={() => setSelectedBodyId(body.id)}
               onMouseEnter={() => setHoveredBodyId(body.id)}
               onMouseLeave={() => setHoveredBodyId(null)}

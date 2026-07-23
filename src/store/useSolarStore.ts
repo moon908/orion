@@ -31,6 +31,8 @@ interface SolarState {
   isLoaded: boolean;
   showAsteroids: boolean;
   nasaApiKey: string;
+  showAsteroidTracker: boolean;
+  showJwstDashboard: boolean;
 
   // NASA JPL Horizons state
   planetVectors: Record<string, BodyVector> | null;
@@ -51,6 +53,8 @@ interface SolarState {
   setSearchQuery: (query: string) => void;
   setIsLoaded: (loaded: boolean) => void;
   setShowAsteroids: (show: boolean) => void;
+  setShowAsteroidTracker: (show: boolean) => void;
+  setShowJwstDashboard: (show: boolean) => void;
   setUseHorizonsTelemetry: (use: boolean) => void;
   fetchHorizonsForDate: (date: Date) => Promise<void>;
   resetSim: () => void;
@@ -68,6 +72,8 @@ export const useSolarStore = create<SolarState>((set, get) => ({
   isLoaded: false,
   showAsteroids: true,
   nasaApiKey: process.env.NEXT_PUBLIC_NASA_API_KEY || 'DEMO_KEY',
+  showAsteroidTracker: false,
+  showJwstDashboard: false,
 
   // Horizons state defaults
   planetVectors: null,
@@ -114,6 +120,8 @@ export const useSolarStore = create<SolarState>((set, get) => ({
   setSearchQuery: (query) => set({ searchQuery: query }),
   setIsLoaded: (loaded) => set({ isLoaded: loaded }),
   setShowAsteroids: (show) => set({ showAsteroids: show }),
+  setShowAsteroidTracker: (show) => set({ showAsteroidTracker: show }),
+  setShowJwstDashboard: (show) => set({ showJwstDashboard: show }),
   setUseHorizonsTelemetry: (use) => {
     set({ useHorizonsTelemetry: use });
     if (use) {
@@ -214,7 +222,9 @@ export const useSolarStore = create<SolarState>((set, get) => ({
       cameraMode: 'free',
       planetVectors: null,
       horizonsError: null,
-      horizonsLoading: false
+      horizonsLoading: false,
+      showAsteroidTracker: false,
+      showJwstDashboard: false
     });
     if (get().useHorizonsTelemetry) {
       get().fetchHorizonsForDate(today);

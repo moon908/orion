@@ -27,6 +27,11 @@ body {
 }
 
 /* Custom low-profile scrollbar for the telemetry dashboards */
+.custom-scrollbar {
+  scroll-behavior: smooth;
+  -webkit-overflow-scrolling: touch;
+}
+
 .custom-scrollbar::-webkit-scrollbar {
   width: 4px;
   height: 4px;
