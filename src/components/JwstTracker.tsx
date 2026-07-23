@@ -44,17 +44,17 @@ export function JwstTracker() {
     {
       title: "Deep Field SMACS 0723",
       desc: "Webb's first deep field showing thousands of galaxies, including the faintest objects ever observed in the infrared.",
-      url: "https://upload.wikimedia.org/wikipedia/commons/thumb/a/a3/Webb%27s_First_Deep_Field.jpg/400px-Webb%27s_First_Deep_Field.jpg"
+      url: "/images/jwst/deep_field.jpg"
     },
     {
       title: "Cosmic Cliffs (Carina Nebula)",
       desc: "A stellar nursery revealing emerging stellar baby stars and hot ionized gas clouds previously hidden behind dust.",
-      url: "https://upload.wikimedia.org/wikipedia/commons/thumb/b/b5/Cosmic_Cliffs_in_Carina_Nebula.jpg/400px-Cosmic_Cliffs_in_Carina_Nebula.jpg"
+      url: "/images/jwst/cosmic_cliffs.jpg"
     },
     {
       title: "Pillars of Creation",
       desc: "Newly formed baby stars stand out in neon red columns of gas and dust inside the Eagle Nebula in infrared detail.",
-      url: "https://upload.wikimedia.org/wikipedia/commons/thumb/d/d7/Pillars_of_Creation_%28NIRCam_Image%29.jpg/400px-Pillars_of_Creation_%28NIRCam_Image%29.jpg"
+      url: "/images/jwst/pillars_of_creation.jpg"
     }
   ];
 
